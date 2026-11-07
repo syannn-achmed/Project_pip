@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Standar Tipografi Instansi Pemerintah / Dinas (Plus Jakarta Sans) */
+html, body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Pastikan semua elemen form, filter, input, dan select memiliki kontras tinggi & terbaca jelas */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+select,
+textarea {
+    color: #0f172a !important; /* text-slate-900 */
+    font-weight: 500 !important;
+}
+
+/* Opsi dropdown select selalu terbaca jelas dengan background putih & teks hitam pekat */
+select option {
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+    font-weight: 500 !important;
+    padding: 6px 10px;
+}
+
+/* Header tabel bergaya portal dinas */
+.table thead th {
+    color: #1e293b !important; /* text-slate-800 */
+    font-weight: 800 !important;
+    letter-spacing: 0.05em;
+}
