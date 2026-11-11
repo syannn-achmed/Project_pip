@@ -456,7 +456,7 @@
         </div>
     </section>
 
-    <!-- 7B. PENGUMUMAN HASIL PERHITUNGAN SAW (PUBLIK / PERIODE AKTIF) -->
+    <!-- 7B. PENGUMUMAN HASIL PERHITUNGAN SAW (PUBLIK / FILTER LENGKAP) -->
     <section id="hasil-seleksi" class="py-16 sm:py-24 bg-white border-t border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto space-y-4 mb-12">
@@ -468,46 +468,38 @@
                     Hasil Perhitungan SAW & Perangkingan Calon PIP
                 </h2>
                 <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
-                    Pengumuman hasil kalkulasi sistem pendukung keputusan metode <em>Simple Additive Weighting</em> untuk periode seleksi berjalan. Terbuka untuk umum dengan perlindungan privasi data siswa.
+                    Pengumuman hasil kalkulasi sistem pendukung keputusan metode <em>Simple Additive Weighting</em> (SAW). Terbuka untuk umum, siswa, dan wali murid dengan filter pencarian lengkap berdasarkan NIS, Nama, Kelas, Status, dan Periode.
                 </p>
-                @if ($periodeAktif)
+                @if ($targetPeriode)
                     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-2xl bg-slate-100 text-slate-700 text-xs font-semibold">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <span>Periode Aktif: <strong class="text-emerald-700">{{ $periodeAktif->nama_periode }}</strong> ({{ $periodeAktif->tahun_ajaran }})</span>
+                        <span>Menampilkan Periode: <strong class="text-emerald-700">{{ $targetPeriode->nama_periode }}</strong> ({{ $targetPeriode->tahun_ajaran }})
+                            @if ($targetPeriode->status_aktif)
+                                <span class="ml-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Aktif</span>
+                            @endif
+                        </span>
                     </div>
                 @endif
             </div>
 
-            @if (!$periodeAktif)
+            @if (!$targetPeriode)
                 <div class="p-8 rounded-3xl bg-amber-50 border border-amber-200 text-center max-w-2xl mx-auto space-y-2">
                     <div class="w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
-                    <h3 class="font-bold text-gray-900 text-base">Belum Ada Periode Seleksi Aktif</h3>
-                    <p class="text-xs text-gray-600">Saat ini belum ada periode seleksi bantuan PIP yang berstatus aktif. Silakan hubungi Panitia PIP Madrasah untuk jadwal pendaftaran.</p>
-                </div>
-            @elseif ($hasilSaws->isEmpty() && !request()->hasAny(['kelas', 'status', 'q']))
-                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-200 text-center max-w-2xl mx-auto space-y-3">
-                    <div class="w-12 h-12 mx-auto rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                    </div>
-                    <h3 class="font-bold text-gray-900 text-base">Kalkulasi Belum Dilakukan</h3>
-                    <p class="text-xs text-gray-600 leading-relaxed">
-                        Data penilaian sedang dalam proses verifikasi dan perhitungan SAW oleh Panitia TU. Hasil perangkingan resmi akan langsung tayang pada halaman ini setelah penetapan kuota.
-                    </p>
+                    <h3 class="font-bold text-gray-900 text-base">Belum Ada Data Periode Seleksi</h3>
+                    <p class="text-xs text-gray-600">Saat ini belum ada data periode seleksi bantuan PIP yang tercatat di sistem.</p>
                 </div>
             @else
                 <!-- Ringkasan Statistik Singkat -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                     <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                         <div>
-                            <span class="text-xs text-gray-500 font-medium">Total Kandidat Dinilai</span>
+                            <span class="text-xs text-gray-500 font-medium">Total Kandidat Terhitung</span>
                             <div class="text-xl font-black text-gray-900">{{ $hasilSaws->total() }} <span class="text-xs font-normal text-gray-500">siswa</span></div>
                         </div>
                         <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
@@ -540,52 +532,89 @@
                     </div>
                 </div>
 
-                <!-- Form Filter & Pencarian -->
-                <div class="p-4 sm:p-5 rounded-3xl bg-slate-50 border border-slate-200 mb-6 shadow-sm">
-                    <form method="GET" action="{{ url('/') }}#hasil-seleksi" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-                        <!-- Search Box -->
-                        <div class="sm:col-span-5 relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </span>
-                            <input type="text" name="q" value="{{ request('q') }}"
-                                placeholder="Cari nama atau NIS siswa..."
-                                class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none transition" />
+                <!-- Form Filter & Pencarian Lengkap: NIS, Nama, Kelas, Periode, Status -->
+                <div class="p-5 sm:p-6 rounded-3xl bg-slate-50 border border-slate-200 mb-6 shadow-sm">
+                    <form method="GET" action="{{ url('/') }}#hasil-seleksi" class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                            <!-- Filter NIS -->
+                            <div class="relative">
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Cari NIS Siswa</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                        </svg>
+                                    </span>
+                                    <input type="text" name="nis" value="{{ request('nis') }}"
+                                        placeholder="Nomor Induk Siswa..."
+                                        class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none transition" />
+                                </div>
+                            </div>
+
+                            <!-- Filter Nama Siswa -->
+                            <div class="relative">
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Cari Nama Siswa</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </span>
+                                    <input type="text" name="nama" value="{{ request('nama') }}"
+                                        placeholder="Nama siswa..."
+                                        class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none transition" />
+                                </div>
+                            </div>
+
+                            <!-- Filter Kelas -->
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Pilih Kelas</label>
+                                <select name="kelas" class="w-full py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white focus:border-emerald-600 focus:outline-none transition">
+                                    <option value="" class="text-slate-900 font-bold">-- Semua Kelas --</option>
+                                    @foreach ($kelasList as $k)
+                                        <option value="{{ $k }}" {{ request('kelas') == $k ? 'selected' : '' }} class="text-slate-900">
+                                            Kelas {{ $k }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Filter Periode (Default: Periode Aktif) -->
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Periode Seleksi</label>
+                                <select name="periode_id" class="w-full py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white focus:border-emerald-600 focus:outline-none transition">
+                                    @foreach ($periodes as $p)
+                                        <option value="{{ $p->id }}" {{ ($targetPeriode && $targetPeriode->id == $p->id) ? 'selected' : '' }} class="text-slate-900">
+                                            {{ $p->nama_periode }} ({{ $p->tahun_ajaran }}) {{ $p->status_aktif ? '★ Aktif' : '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Filter Status -->
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Status Kelolosan</label>
+                                <select name="status" class="w-full py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white focus:border-emerald-600 focus:outline-none transition">
+                                    <option value="" class="text-slate-900 font-bold">-- Semua Status --</option>
+                                    <option value="Lolos" {{ request('status') == 'Lolos' ? 'selected' : '' }} class="text-slate-900 font-semibold text-emerald-700">Lolos</option>
+                                    <option value="Tidak Lolos" {{ request('status') == 'Tidak Lolos' ? 'selected' : '' }} class="text-slate-900 font-semibold text-rose-700">Tidak Lolos</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <!-- Filter Kelas -->
-                        <div class="sm:col-span-3">
-                            <select name="kelas" class="w-full py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white focus:border-emerald-600 focus:outline-none transition">
-                                <option value="" class="text-slate-900 font-bold">-- Semua Kelas --</option>
-                                @foreach ($kelasList as $k)
-                                    <option value="{{ $k }}" {{ request('kelas') == $k ? 'selected' : '' }} class="text-slate-900">
-                                        Kelas {{ $k }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Filter Status -->
-                        <div class="sm:col-span-2">
-                            <select name="status" class="w-full py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white focus:border-emerald-600 focus:outline-none transition">
-                                <option value="" class="text-slate-900 font-bold">-- Status --</option>
-                                <option value="Lolos" {{ request('status') == 'Lolos' ? 'selected' : '' }} class="text-slate-900 font-semibold text-emerald-700">Lolos</option>
-                                <option value="Tidak Lolos" {{ request('status') == 'Tidak Lolos' ? 'selected' : '' }} class="text-slate-900 font-semibold text-rose-700">Tidak Lolos</option>
-                            </select>
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="sm:col-span-2 flex items-center gap-2">
-                            <button type="submit" class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">
-                                Terapkan
-                            </button>
-                            @if (request()->hasAny(['kelas', 'status', 'q']))
-                                <a href="{{ url('/') }}#hasil-seleksi" class="py-2 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition">
-                                    Reset
+                        <!-- Action Buttons -->
+                        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200/70">
+                            @if (request()->hasAny(['nis', 'nama', 'kelas', 'status', 'periode_id']))
+                                <a href="{{ url('/') }}#hasil-seleksi" class="py-2 px-4 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition">
+                                    Reset Filter
                                 </a>
                             @endif
+                            <button type="submit" class="py-2 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm shadow-emerald-600/20 transition flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                Terapkan Filter & Cari
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -597,7 +626,8 @@
                             <thead>
                                 <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
                                     <th class="py-3.5 px-4 text-center w-20">Peringkat</th>
-                                    <th class="py-3.5 px-4">Nama Siswa (Disamarkan)</th>
+                                    <th class="py-3.5 px-4">Nama Siswa</th>
+                                    <th class="py-3.5 px-4 text-center w-32">NIS</th>
                                     <th class="py-3.5 px-4 text-center w-24">Kelas</th>
                                     <th class="py-3.5 px-4 text-center w-36">Nilai Akhir (V)</th>
                                     <th class="py-3.5 px-4 text-center w-36">Status Seleksi</th>
@@ -607,12 +637,7 @@
                                 @forelse ($hasilSaws as $item)
                                     @php
                                         $nama = $item->siswa->nama ?? 'Siswa';
-                                        $nis = $item->siswa->nis ?? '0000';
-                                        // Masking Nama: Inisial huruf pertama tiap kata, sisanya sensor bintang
-                                        $maskedNama = preg_replace_callback('/\b(\w)(\w+)/u', function ($m) {
-                                            return $m[1] . str_repeat('*', min(4, strlen($m[2])));
-                                        }, $nama);
-
+                                        $nis = $item->siswa->nis ?? '-';
                                         $isTop3 = $item->peringkat <= 3;
                                         $isLolos = $item->status_penerimaan === 'Lolos';
                                     @endphp
@@ -638,19 +663,26 @@
                                             @endif
                                         </td>
 
-                                        <!-- Nama Siswa (Masked) -->
+                                        <!-- Nama Siswa -->
                                         <td class="py-3.5 px-4">
-                                            <div class="font-bold text-slate-900">{{ $maskedNama }}</div>
+                                            <div class="font-bold text-slate-900">{{ $nama }}</div>
                                             <div class="text-[11px] text-slate-400 font-mono flex items-center gap-1.5 mt-0.5">
-                                                <span>Identitas Terproteksi</span>
+                                                <span>Calon Penerima PIP</span>
                                                 <span>&bull;</span>
                                                 <span>MIS AL KAUTSAR</span>
                                             </div>
                                         </td>
 
+                                        <!-- NIS -->
+                                        <td class="py-3.5 px-4 text-center font-mono">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs">
+                                                {{ $nis }}
+                                            </span>
+                                        </td>
+
                                         <!-- Kelas -->
                                         <td class="py-3.5 px-4 text-center">
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-xs">
                                                 Kelas {{ $item->siswa->kelas ?? '-' }}
                                             </span>
                                         </td>
@@ -669,7 +701,7 @@
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                                                     </svg>
-                                                    Lolos Seleksi
+                                                    Lolos
                                                 </span>
                                             @else
                                                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
@@ -680,7 +712,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="py-12 text-center text-slate-500 text-xs sm:text-sm">
+                                        <td colspan="6" class="py-12 text-center text-slate-500 text-xs sm:text-sm">
                                             Tidak ditemukan hasil perhitungan yang sesuai dengan filter pencarian.
                                         </td>
                                     </tr>
@@ -697,35 +729,33 @@
                     @endif
                 </div>
 
-                <!-- Footer Note Privasi -->
-                <div class="mt-4 p-4 rounded-2xl bg-slate-100/70 border border-slate-200 text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <!-- Footer Informasi Pengumuman -->
+                <div class="mt-4 p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span>Sesuai regulasi perlindungan data pribadi siswa, nama pendaftar disamarkan untuk umum. Orang tua/wali murid dapat masuk ke <strong>Portal Orang Tua</strong> untuk melihat rincian lengkap putra-putrinya.</span>
+                        <span>Data hasil seleksi dihitung otomatis menggunakan metode <strong>Simple Additive Weighting (SAW)</strong> berdasarkan matriks penilaian yang ditetapkan oleh panitia madrasah.</span>
                     </div>
-                    <a href="{{ route('login') }}" class="text-emerald-700 hover:text-emerald-900 font-bold whitespace-nowrap">
-                        Masuk Portal &rarr;
-                    </a>
+                    <span class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">MIS AL KAUTSAR</span>
                 </div>
             @endif
         </div>
     </section>
 
-    <!-- 8. PORTAL LOGIN / AKSES SESUAI ROLE -->
+    <!-- 8. PORTAL LOGIN / AKSES SESUAI ROLE (ADMIN TU & KEPALA MADRASAH) -->
     <section class="py-16 sm:py-24 bg-white border-t border-slate-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto space-y-4 mb-12">
                 <h2 class="text-3xl font-black text-gray-950 tracking-tight">
-                    Masuk Melalui Portal Peran Anda
+                    Masuk Melalui Portal Petugas
                 </h2>
                 <p class="text-gray-600 text-sm leading-relaxed">
-                    Sistem ini terbagi menjadi tiga peran dengan kewenangan dan tampilan khusus.
+                    Akses login khusus pengelola dan pimpinan madrasah untuk manajemen data dan pengesahan hasil seleksi PIP.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
 
                 <!-- Admin TU Card -->
                 <div class="p-8 rounded-3xl bg-slate-50 border border-slate-200 hover:border-emerald-500 transition-all space-y-4 flex flex-col justify-between">
@@ -738,7 +768,7 @@
                         </div>
                         <h3 class="text-lg font-black text-gray-950">Admin Tata Usaha</h3>
                         <p class="text-xs text-gray-500 mt-1 leading-relaxed">
-                            Mengelola data periode, master kriteria dan bobot, data siswa alternatif, serta mengeksekusi perhitungan SAW.
+                            Mengelola data periode, master kriteria dan bobot, data siswa calon penerima, input nilai kriteria, dan mengeksekusi perhitungan SAW.
                         </p>
                     </div>
                     <a href="{{ route('login') }}" class="inline-flex items-center justify-center w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">
@@ -756,29 +786,11 @@
                         </div>
                         <h3 class="text-lg font-black text-gray-950">Kepala Madrasah</h3>
                         <p class="text-xs text-gray-500 mt-1 leading-relaxed">
-                            Memantau rekapitulasi data pendaftar, meninjau hasil perangkingan, dan mencetak berkas Surat Keputusan penetapan resmi.
+                            Memantau rekapitulasi data pendaftar, meninjau hasil perangkingan, dan mencetak berkas Surat Keputusan (SK) penetapan resmi ber-KOP madrasah.
                         </p>
                     </div>
                     <a href="{{ route('login') }}" class="inline-flex items-center justify-center w-full py-2.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition">
                         Masuk Kepala Madrasah &rarr;
-                    </a>
-                </div>
-
-                <!-- Ortu Card -->
-                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-200 hover:border-amber-500 transition-all space-y-4 flex flex-col justify-between">
-                    <div>
-                        <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center mb-4 shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-black text-gray-950">Orang Tua / Wali</h3>
-                        <p class="text-xs text-gray-500 mt-1 leading-relaxed">
-                            Memeriksa status kelayakan putra-putri secara mandiri atau melihat pengumuman umum yang disamarkan demi privasi.
-                        </p>
-                    </div>
-                    <a href="{{ route('login') }}" class="inline-flex items-center justify-center w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition">
-                        Masuk Portal Orang Tua &rarr;
                     </a>
                 </div>
 

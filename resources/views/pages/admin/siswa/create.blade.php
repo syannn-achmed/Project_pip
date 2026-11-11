@@ -87,58 +87,11 @@
                                 class="input input-bordered input-sm sm:input-md rounded-xl focus:outline-primary @error('nama_ortu') input-error @enderror" />
                         </div>
 
-                        <!-- Pekerjaan Ortu -->
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-semibold text-xs">Pekerjaan Orang Tua</span></label>
-                            <input type="text" name="pekerjaan_ortu" value="{{ old('pekerjaan_ortu') }}" placeholder="Contoh: Buruh Harian Lepas, Petani "
-                                class="input input-bordered input-sm sm:input-md rounded-xl focus:outline-primary" />
-                        </div>
-
                         <!-- No Telp / WA -->
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold text-xs">Nomor Telepon / WhatsApp</span></label>
                             <input type="text" name="no_telp" value="{{ old('no_telp') }}" placeholder="Contoh: 081234567890"
                                 class="input input-bordered input-sm sm:input-md rounded-xl focus:outline-primary" />
-                        </div>
-
-                        <!-- Tautkan Akun Ortu -->
-                        <div class="form-control" x-data="{ buatBaru: false }">
-                            <label class="label">
-                                <span class="label-text font-bold text-xs text-slate-700">Akun Login Orang Tua (Portal Pengumuman)</span>
-                            </label>
-                            
-                            <div class="space-y-2">
-                                <div x-show="!buatBaru">
-                                    <select name="user_id_ortu" class="select select-bordered select-md w-full min-h-12 h-12 rounded-xl leading-normal focus:outline-primary">
-                                        <option value="">-- Pilih Akun Ortu Yang Sudah Ada (Opsional) --</option>
-                                        @foreach ($ortuUsers as $user)
-                                            <option value="{{ $user->id }}" {{ old('user_id_ortu') == $user->id ? 'selected' : '' }}>
-                                                {{ $user->name }} ({{ $user->email }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="flex items-center gap-2 pt-1">
-                                    <input type="checkbox" id="buat_akun_ortu" name="buat_akun_ortu" value="1" x-model="buatBaru" class="checkbox checkbox-sm checkbox-primary rounded-md">
-                                    <label for="buat_akun_ortu" class="text-xs font-semibold text-emerald-800 cursor-pointer">
-                                        + Buatkan akun login baru sekaligus untuk orang tua ini
-                                    </label>
-                                </div>
-
-                                <div x-show="buatBaru" x-cloak class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2 mt-2">
-                                    <div>
-                                        <label class="text-[11px] font-bold text-emerald-900 block">Email Login Orang Tua:</label>
-                                        <input type="email" name="email_ortu_baru" value="{{ old('email_ortu_baru') }}" placeholder="Contoh: ortu.siswa@sekolah.com"
-                                            class="input input-bordered input-sm w-full rounded-lg text-slate-900 bg-white font-medium border-slate-300">
-                                    </div>
-                                    <div>
-                                        <label class="text-[11px] font-bold text-emerald-900 block">Kata Sandi (Default: password123):</label>
-                                        <input type="text" name="password_ortu_baru" value="password123"
-                                            class="input input-bordered input-sm w-full rounded-lg text-slate-900 bg-white font-medium border-slate-300">
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Alamat Lengkap -->

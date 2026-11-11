@@ -87,33 +87,11 @@
                                 class="input input-bordered input-sm sm:input-md rounded-xl focus:outline-primary @error('nama_ortu') input-error @enderror" />
                         </div>
 
-                        <!-- Pekerjaan Ortu -->
-                        <div class="form-control">
-                            <label class="label"><span class="label-text font-semibold text-xs">Pekerjaan Orang Tua</span></label>
-                            <input type="text" name="pekerjaan_ortu" value="{{ old('pekerjaan_ortu', $siswa->pekerjaan_ortu) }}"
-                                class="input input-bordered input-sm sm:input-md rounded-xl focus:outline-primary" />
-                        </div>
-
                         <!-- No Telp / WA -->
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold text-xs">Nomor Telepon / WhatsApp</span></label>
                             <input type="text" name="no_telp" value="{{ old('no_telp', $siswa->no_telp) }}"
                                 class="input input-bordered input-sm sm:input-md rounded-xl focus:outline-primary" />
-                        </div>
-
-                        <!-- Tautkan Akun Ortu -->
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-semibold text-xs">Tautkan ke Akun Login Ortu (Opsional)</span>
-                            </label>
-                            <select name="user_id_ortu" class="select select-bordered select-sm sm:select-md rounded-xl focus:outline-primary">
-                                <option value="">-- Tidak Ditautkan / Belum Punya Akun --</option>
-                                @foreach ($ortuUsers as $user)
-                                    <option value="{{ $user->id }}" {{ old('user_id_ortu', $siswa->user_id_ortu) == $user->id ? 'selected' : '' }}>
-                                        {{ $user->name }} ({{ $user->email }})
-                                    </option>
-                                @endforeach
-                            </select>
                         </div>
 
                         <!-- Alamat Lengkap -->

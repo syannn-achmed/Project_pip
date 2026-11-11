@@ -36,13 +36,6 @@ class RoleAndUserSeeder extends Seeder
         ]);
         $kepsek->assignRole($roleKepsek);
 
-        // 4. Buat Dummy Orang Tua (Contoh 1 orang)
-        $ortu = User::create([
-            'name' => 'Bapak Budi (Ortu Siswa)',
-            'email' => 'ortu@sekolah.com',
-            'password' => Hash::make('password123'),
-        ]);
-        $ortu->assignRole($roleOrtu);
 
         $this->command->info('Roles dan Dummy Users berhasil dibuat!');
     }

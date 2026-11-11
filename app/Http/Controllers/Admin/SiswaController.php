@@ -6,7 +6,6 @@ use App\Exports\SiswaExport;
 use App\Http\Controllers\Controller;
 use App\Imports\SiswaImport;
 use App\Models\Siswa;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,7 +14,7 @@ class SiswaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Siswa::with('ortu')->latest();
+        $query = Siswa::latest();
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -36,16 +35,13 @@ class SiswaController extends Controller
 
         $siswas = $query->paginate(10)->withQueryString();
         $kelasList = Siswa::select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
-        $ortuUsers = User::role('orang_tua')->orderBy('name')->get();
 
-        return view('pages.admin.siswa.index', compact('siswas', 'kelasList', 'ortuUsers'));
+        return view('pages.admin.siswa.index', compact('siswas', 'kelasList'));
     }
 
     public function create()
     {
-        // Ambil akun user dengan role orang_tua jika ada
-        $ortuUsers = User::role('orang_tua')->orderBy('name')->get();
-        return view('pages.admin.siswa.create', compact('ortuUsers'));
+        return view('pages.admin.siswa.create');
     }
 
     public function store(Request $request)
@@ -56,26 +52,12 @@ class SiswaController extends Controller
             'kelas' => 'required|string|max:50',
             'jk' => 'required|in:L,P',
             'nama_ortu' => 'required|string|max:255',
-            'pekerjaan_ortu' => 'nullable|string|max:255',
             'no_telp' => 'nullable|string|max:30',
             'alamat' => 'nullable|string',
-            'user_id_ortu' => 'nullable|exists:users,id',
-            'email_ortu_baru' => 'nullable|email|unique:users,email',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        $data = $request->except(['foto', 'buat_akun_ortu', 'email_ortu_baru', 'password_ortu_baru']);
-
-        // Jika dicentang buat akun orang tua baru secara otomatis
-        if ($request->boolean('buat_akun_ortu') && $request->filled('email_ortu_baru')) {
-            $ortuUser = User::create([
-                'name' => $request->nama_ortu,
-                'email' => $request->email_ortu_baru,
-                'password' => \Illuminate\Support\Facades\Hash::make($request->input('password_ortu_baru', 'password123')),
-            ]);
-            $ortuUser->assignRole('orang_tua');
-            $data['user_id_ortu'] = $ortuUser->id;
-        }
+        $data = $request->except(['foto']);
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('siswas', 'public');
@@ -90,9 +72,7 @@ class SiswaController extends Controller
     public function edit(string $id)
     {
         $siswa = Siswa::findOrFail($id);
-        $ortuUsers = User::role('orang_tua')->orderBy('name')->get();
-
-        return view('pages.admin.siswa.edit', compact('siswa', 'ortuUsers'));
+        return view('pages.admin.siswa.edit', compact('siswa'));
     }
 
     public function update(Request $request, string $id)
@@ -105,10 +85,8 @@ class SiswaController extends Controller
             'kelas' => 'required|string|max:50',
             'jk' => 'required|in:L,P',
             'nama_ortu' => 'required|string|max:255',
-            'pekerjaan_ortu' => 'nullable|string|max:255',
             'no_telp' => 'nullable|string|max:30',
             'alamat' => 'nullable|string',
-            'user_id_ortu' => 'nullable|exists:users,id',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 

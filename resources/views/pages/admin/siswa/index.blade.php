@@ -127,7 +127,6 @@
                             <th>Kelas / JK</th>
                             <th>Orang Tua / Wali</th>
                             <th>Kontak & Alamat</th>
-                            <th>Akun Ortu</th>
                             <th class="text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -164,40 +163,12 @@
                                 <!-- Data Ortu -->
                                 <td>
                                     <div class="font-medium text-base-content">{{ $siswa->nama_ortu }}</div>
-                                    <div class="text-xs text-base-content/50">{{ $siswa->pekerjaan_ortu ?? 'Pekerjaan: -' }}</div>
                                 </td>
 
                                 <!-- Kontak & Alamat -->
                                 <td>
                                     <div class="text-xs text-base-content/80 font-mono">{{ $siswa->no_telp ?? '-' }}</div>
                                     <div class="text-xs text-base-content/50 line-clamp-1 max-w-[180px]">{{ $siswa->alamat ?? '-' }}</div>
-                                </td>
-
-                                <!-- Akun Ortu Terhubung -->
-                                <td>
-                                    @if ($siswa->ortu)
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold" title="{{ $siswa->ortu->name }}">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                {{ $siswa->ortu->email }}
-                                            </span>
-                                            <form method="POST" action="{{ route('admin.siswa.lepas-akun-ortu') }}" onsubmit="return confirm('Lepaskan akun orang tua dari siswa {{ $siswa->nama }}?')">
-                                                @csrf
-                                                <input type="hidden" name="siswa_id" value="{{ $siswa->id }}">
-                                                <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold px-1" title="Lepaskan Tautan Akun">✕</button>
-                                            </form>
-                                        </div>
-                                    @else
-                                        <button type="button" onclick="openModalTautkanOrtu({{ $siswa->id }}, '{{ addslashes($siswa->nama) }}', '{{ $siswa->nis }}', '{{ addslashes($siswa->nama_ortu) }}')"
-                                            class="btn btn-outline btn-primary btn-xs rounded-lg font-bold gap-1 shadow-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                                            </svg>
-                                            + Buat / Tautkan
-                                        </button>
-                                    @endif
                                 </td>
 
                                 <!-- Aksi -->
@@ -223,7 +194,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-10 text-base-content/50">
+                                <td colspan="6" class="text-center py-10 text-base-content/50">
                                     <div class="flex flex-col items-center justify-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-base-content/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -263,7 +234,7 @@
 
                 <div class="p-3 bg-base-200/50 rounded-xl text-xs text-base-content/70 space-y-1">
                     <p class="font-semibold text-base-content">Format kolom baris pertama (Heading):</p>
-                    <p class="font-mono text-[11px]">nis | nama | kelas | jk | nama_ortu | pekerjaan_ortu | no_telp | alamat</p>
+                    <p class="font-mono text-[11px]">nis | nama | kelas | jk | nama_ortu | no_telp | alamat</p>
                 </div>
 
                 <div class="modal-action">
@@ -276,91 +247,4 @@
             <button>close</button>
         </form>
     </dialog>
-
-    <!-- Modal Buat / Tautkan Akun Ortu untuk Siswa Spesifik -->
-    <dialog id="modal-tautkan-ortu" class="modal modal-bottom sm:modal-middle">
-        <div class="modal-box rounded-3xl bg-white p-6 max-w-lg" x-data="{ mode: 'baru' }">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div>
-                    <h3 class="font-black text-lg text-slate-900">Akun Orang Tua Siswa</h3>
-                    <p class="text-xs text-slate-500 mt-0.5" id="target-siswa-label">Siswa: -</p>
-                </div>
-                <button type="button" onclick="document.getElementById('modal-tautkan-ortu').close()" class="btn btn-sm btn-circle btn-ghost">✕</button>
-            </div>
-
-            <!-- Mode Switcher -->
-            <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-2xl mt-4 text-xs font-bold">
-                <button type="button" @click="mode = 'baru'" :class="mode === 'baru' ? 'bg-white text-emerald-800 shadow-sm' : 'text-slate-600'" class="py-2 rounded-xl transition">
-                    + Buat Akun Baru
-                </button>
-                <button type="button" @click="mode = 'pilih'" :class="mode === 'pilih' ? 'bg-white text-emerald-800 shadow-sm' : 'text-slate-600'" class="py-2 rounded-xl transition">
-                    Pilih Akun Terdaftar
-                </button>
-            </div>
-
-            <!-- FORM 1: Buat Akun Baru -->
-            <form id="form-quick-buat-ortu" method="POST" action="" x-show="mode === 'baru'" class="space-y-3.5 mt-4">
-                @csrf
-                <div class="form-control">
-                    <label class="label p-0 mb-1"><span class="text-xs font-bold text-slate-700">Nama Orang Tua / Wali</span></label>
-                    <input type="text" id="quick-nama-ortu" name="name" required
-                        class="input input-bordered input-sm rounded-xl font-medium text-slate-900 bg-white border-slate-300 focus:border-emerald-600 focus:outline-none w-full" />
-                </div>
-
-                <div class="form-control">
-                    <label class="label p-0 mb-1"><span class="text-xs font-bold text-slate-700">Alamat Email Login</span></label>
-                    <input type="email" id="quick-email-ortu" name="email" required
-                        class="input input-bordered input-sm rounded-xl font-medium text-slate-900 bg-white border-slate-300 focus:border-emerald-600 focus:outline-none w-full" />
-                </div>
-
-                <div class="form-control">
-                    <label class="label p-0 mb-1"><span class="text-xs font-bold text-slate-700">Kata Sandi Default</span></label>
-                    <input type="text" name="password" required value="password123"
-                        class="input input-bordered input-sm rounded-xl font-medium text-slate-900 bg-white border-slate-300 focus:border-emerald-600 focus:outline-none w-full" />
-                    <span class="text-[10px] text-slate-400 mt-1">Sandi standar awal: <code>password123</code></span>
-                </div>
-
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('modal-tautkan-ortu').close()" class="btn btn-ghost btn-sm rounded-xl">Batal</button>
-                    <button type="submit" class="btn btn-primary btn-sm rounded-xl font-bold">Buat & Tautkan Sekarang</button>
-                </div>
-            </form>
-
-            <!-- FORM 2: Pilih Akun Terdaftar -->
-            <form method="POST" action="{{ route('admin.siswa.tautkan-akun-ortu') }}" x-show="mode === 'pilih'" x-cloak class="space-y-4 mt-4">
-                @csrf
-                <input type="hidden" id="tautkan-siswa-id" name="siswa_id" value="">
-
-                <div class="form-control">
-                    <label class="label p-0 mb-1"><span class="text-xs font-bold text-slate-700">Pilih Akun Orang Tua Terdaftar</span></label>
-                    <select name="user_id_ortu" required class="select select-bordered select-sm rounded-xl font-medium text-slate-900 bg-white border-slate-300 focus:border-emerald-600 focus:outline-none w-full">
-                        <option value="" disabled selected>-- Pilih Pengguna Orang Tua --</option>
-                        @foreach ($ortuUsers as $u)
-                            <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->email }})</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('modal-tautkan-ortu').close()" class="btn btn-ghost btn-sm rounded-xl">Batal</button>
-                    <button type="submit" class="btn btn-primary btn-sm rounded-xl font-bold">Tautkan ke Siswa Ini</button>
-                </div>
-            </form>
-        </div>
-        <form method="dialog" class="modal-backdrop">
-            <button>close</button>
-        </form>
-    </dialog>
-
-    <script>
-        function openModalTautkanOrtu(siswaId, namaSiswa, nis, namaOrtu) {
-            document.getElementById('target-siswa-label').innerText = 'Siswa: ' + namaSiswa + ' (NIS: ' + nis + ')';
-            document.getElementById('quick-nama-ortu').value = namaOrtu || namaSiswa;
-            // Rekomendasi email: ortu.<nis>@sekolah.com
-            document.getElementById('quick-email-ortu').value = 'ortu.' + nis + '@sekolah.com';
-            document.getElementById('form-quick-buat-ortu').action = "{{ url('admin/siswa') }}/" + siswaId + "/buat-akun-ortu";
-            document.getElementById('tautkan-siswa-id').value = siswaId;
-            document.getElementById('modal-tautkan-ortu').showModal();
-        }
-    </script>
 </x-admin-layout>

@@ -61,16 +61,13 @@
 
     <!-- Quick Credentials Helper for Demo / Testing -->
     <div class="mt-6 pt-5 border-t border-dashed border-gray-200">
-        <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400 block mb-2 text-center">Bantuan Akses Default</span>
-        <div class="grid grid-cols-3 gap-1.5 text-center text-[10px]">
-            <button type="button" onclick="fillCred('admin@sekolah.com')" class="p-1.5 bg-gray-50 hover:bg-emerald-50 hover:text-emerald-800 rounded-lg border border-gray-200 transition">
-                <strong>Admin TU</strong>
+        <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400 block mb-2 text-center">Bantuan Akses Cepat</span>
+        <div class="grid grid-cols-2 gap-2 text-center text-xs">
+            <button type="button" onclick="fillCred('admin@sekolah.com')" class="p-2 bg-gray-50 hover:bg-emerald-50 hover:text-emerald-800 rounded-xl border border-gray-200 font-bold transition">
+                Admin TU
             </button>
-            <button type="button" onclick="fillCred('kepsek@sekolah.com')" class="p-1.5 bg-gray-50 hover:bg-emerald-50 hover:text-emerald-800 rounded-lg border border-gray-200 transition">
-                <strong>Kepsek</strong>
-            </button>
-            <button type="button" onclick="fillCred('ortu@sekolah.com')" class="p-1.5 bg-gray-50 hover:bg-emerald-50 hover:text-emerald-800 rounded-lg border border-gray-200 transition">
-                <strong>Orang Tua</strong>
+            <button type="button" onclick="fillCred('kepsek@sekolah.com')" class="p-2 bg-gray-50 hover:bg-teal-50 hover:text-teal-800 rounded-xl border border-gray-200 font-bold transition">
+                Kepala Madrasah
             </button>
         </div>
     </div>

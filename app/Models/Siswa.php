@@ -13,12 +13,6 @@ class Siswa extends Model
     use HasFactory, SoftDeletes;
     protected $guarded = ['id'];
 
-    // Relasi ke User (Ortu)
-    public function ortu()
-    {
-        return $this->belongsTo(User::class, 'user_id_ortu');
-    }
-
     public function penilaians()
     {
         return $this->hasMany(Penilaian::class);

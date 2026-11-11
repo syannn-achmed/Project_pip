@@ -19,10 +19,10 @@ Aplikasi ini bertujuan untuk mengotomatisasi dan mendokumentasikan seleksi kelay
 | Komponen | Teknologi | Keterangan |
 | :--- | :--- | :--- |
 | **Backend Framework** | Laravel 11.x (PHP 8.2+) | Model-View-Controller (MVC) standar industri |
-| **Autentikasi & RBAC** | Laravel Breeze + Spatie Laravel Permission 6.x | Role: `admin_tu`, `kepala_sekolah`, `orang_tua` |
+| **Autentikasi & RBAC** | Laravel Breeze + Spatie Laravel Permission 6.x | Role Petugas: `admin_tu`, `kepala_sekolah` |
 | **Frontend Styling** | Tailwind CSS 3.x + DaisyUI 4.x + Alpine.js | Modern, bernuansa hijau madrasah (emerald/teal), responsif, dan ringan |
 | **Tipografi Portal** | **Plus Jakarta Sans** (Google Fonts) | Standar tipografi resmi instansi pemerintah, kementerian & layanan publik SPBE |
-| **Pengolah Spreadsheet** | `maatwebsite/excel: ^3.1` | Import & Export data calon penerima (.xlsx, .csv) |
+| **Pengolah Spreadsheet** | `maatwebsite/excel: ^3.1` | Import & Export data calon penerima (.xlsx, .csv) & import nilai kriteria |
 | **Penerbit Dokumen PDF** | `barryvdh/laravel-dompdf: ^3.1` | Cetak laporan SK pengesahan resmi ber-KOP MIS AL KAUTSAR |
 | **Basis Data** | MySQL / MariaDB | Relasi relasional dengan foreign key & soft deletes |
 
@@ -33,7 +33,7 @@ Aplikasi ini bertujuan untuk mengotomatisasi dan mendokumentasikan seleksi kelay
 Proyek ini telah dikustomisasi secara menyeluruh dengan identitas resmi **MIS AL KAUTSAR** serta standar desain portal instansi dinas/pemerintahan:
 
 ### A. Tipografi Instansi Pemerintah (*Plus Jakarta Sans*)
-Menggunakan keluarga huruf **Plus Jakarta Sans** di seluruh tata letak (*Welcome page, Admin Dashboard, Kepsek, dan Portal Orang Tua*).
+Menggunakan keluarga huruf **Plus Jakarta Sans** di seluruh tata letak (*Welcome page, Admin Dashboard, dan Dashboard Kepala Madrasah*).
 * Diatur pada:
   * [`tailwind.config.js`](file:///c:/xampp/htdocs/PIP_SAW/tailwind.config.js): `fontFamily: { sans: ["'Plus Jakarta Sans'", "Inter", ...] }`
   * [`resources/css/app.css`](file:///c:/xampp/htdocs/PIP_SAW/resources/css/app.css): `@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');`
@@ -63,21 +63,7 @@ Pada cetak dokumen resmi ([`resources/views/pages/admin/laporan/pdf.blade.php`](
 
 ---
 
-## 👨‍👩‍👧‍👦 4. Manajemen Akun Orang Tua Siswa (`AkunOrtuController.php`)
-
-Modul ini dibuat khusus untuk menyelesaikan kebutuhan pengelolaan akun wali murid:
-1. **Menu Sidebar Admin TU**: Tautan menu **"Akun Orang Tua"** di sidebar admin mengarah ke [`admin.akun-ortu.index`](file:///c:/xampp/htdocs/PIP_SAW/resources/views/pages/admin/akun-ortu/index.blade.php).
-2. **Fitur Pengelolaan Terpusat**:
-   * Menampilkan daftar akun orang tua beserta daftar nama anak yang tertaut.
-   * Menambahkan akun baru dan menautkannya ke siswa yang belum berpemilik.
-   * Mengatur ulang kata sandi (*reset password*) atau memperbarui email orang tua.
-   * Melepaskan tautan anak (*unlink*) atau menghapus akun.
-3. **Pintasan Cepat pada Data Siswa** ([`resources/views/pages/admin/siswa/index.blade.php`](file:///c:/xampp/htdocs/PIP_SAW/resources/views/pages/admin/siswa/index.blade.php)):
-   * Pada kolom **"Akun Ortu"**, siswa yang belum memiliki akun dapat dibuatkan akun login baru secara instan melalui modal pop-up dengan rekomendasi format email otomatis (`ortu.<nis>@sekolah.com`) dan kata sandi bawaan (`password123`), atau ditautkan ke akun orang tua yang telah terdaftar sebelumnya.
-
----
-
-## 🔒 5. Penanganan Keamanan & Sesi Logout Anti-404
+## 🔒 4. Penanganan Keamanan & Sesi Logout Anti-404
 
 * **Masalah Sebelumnya**: Pemanggilan rute logout via GET (misal saat browser refresh atau history back) atau sesi yang kedaluwarsa sering memicu galat 404 / 405 *Method Not Allowed*. Selain itu, `redirect('/')` pada instalasi subfolder XAMPP (`localhost/PIP_SAW/public`) terkadang melempar pengguna ke *root dashboard* XAMPP.
 * **Solusi yang Diterapkan**:
@@ -86,7 +72,7 @@ Modul ini dibuat khusus untuk menyelesaikan kebutuhan pengelolaan akun wali muri
 
 ---
 
-## 🗂️ 6. Peta Struktur Folder & File Kunci
+## 🗂️ 5. Peta Struktur Folder & File Kunci
 
 ```text
 PIP_SAW/
@@ -104,14 +90,11 @@ PIP_SAW/
 │   │   │   ├── KriteriaController.php   # CRUD kriteria & validasi bobot 100%
 │   │   │   ├── SubKriteriaController.php# CRUD skala bobot & filter kriteria
 │   │   │   ├── SiswaController.php      # CRUD siswa, foto, & trigger excel
-│   │   │   ├── AkunOrtuController.php   # Manajemen & tautan akun orang tua siswa
 │   │   │   ├── PenilaianController.php  # Form input nilai alternatif & impor Excel
 │   │   │   ├── HasilSawController.php   # Eksekusi & transparansi matriks SAW
 │   │   │   └── LaporanController.php    # Rekapitulasi & cetak PDF
-│   │   ├── Kepsek/
-│   │   │   └── DashboardController.php  # Ringkasan eksekutif & akses laporan PDF
-│   │   └── Ortu/
-│   │       └── DashboardController.php  # Portal pengumuman & data masking
+│   │   └── Kepsek/
+│   │       └── DashboardController.php  # Ringkasan eksekutif & akses laporan PDF
 │   ├── Models/
 │   │   ├── Periode.php, Siswa.php, Kriteria.php, SubKriteria.php,
 │   │   ├── Penilaian.php, HasilSaw.php, User.php
@@ -121,32 +104,30 @@ PIP_SAW/
 ├── database/
 │   ├── migrations/                      # Skema tabel utama & Spatie RBAC
 │   └── seeders/
-│       ├── RoleAndUserSeeder.php        # Akun bawaan (Admin, Kepsek, Ortu)
+│       ├── RoleAndUserSeeder.php        # Akun bawaan (Admin & Kepsek)
 │       └── DummyDataSeeder.php          # Periode aktif, 5 kriteria PIP, & siswa uji
 ├── public/
 │   ├── logo.png                         # Asset logo MIS AL KAUTSAR
 │   └── storage/                         # Symlink storage publik
 ├── resources/views/
-│   ├── welcome.blade.php                # Landing page utama + Hasil SAW Publik (Filterable)
+│   ├── welcome.blade.php                # Landing page utama + Hasil SAW Publik (Filter NIS, Nama, Kelas, Periode, Status)
 │   ├── components/
 │   │   ├── admin-layout.blade.php       # Master layout sidebar & navbar admin
 │   │   └── application-logo.blade.php   # Komponen logo terpusat
 │   ├── layouts/
-│   │   ├── app.blade.php                # Master layout Kepsek & Ortu
+│   │   ├── app.blade.php                # Master layout Kepsek
 │   │   ├── guest.blade.php              # Layout autentikasi berlogo madrasah
 │   │   └── navigation.blade.php         # Navbar user umum
 │   └── pages/
 │       ├── admin/
-│       │   ├── akun-ortu/               # Manajemen akun orang tua
-│       │   ├── siswa/                   # CRUD siswa & modal buat akun ortu
+│       │   ├── siswa/                   # CRUD siswa & upload foto
 │       │   ├── periode/                 # CRUD periode seleksi
 │       │   ├── kriteria/                # CRUD kriteria & bobot
 │       │   ├── subkriteria/             # CRUD subkriteria rating
 │       │   ├── penilaian/               # Form & modal import nilai kriteria Excel
 │       │   ├── saw/                     # Eksekusi mesin SAW
 │       │   └── laporan/                 # Rekapitulasi & cetak PDF
-│       ├── kepsek/                      # View dashboard kepala madrasah
-│       └── ortu/                        # View pengumuman aman privasi orang tua
+│       └── kepsek/                      # View dashboard kepala madrasah
 └── routes/
     ├── web.php                          # Routing multi-role + publik SAW + template import
     └── auth.php                         # Routing otentikasi Breeze & logout aman
@@ -154,19 +135,18 @@ PIP_SAW/
 
 ---
 
-## 📊 7. Fitur Hasil Perhitungan SAW Publik & Import Nilai Kriteria
+## 📊 6. Fitur Hasil Perhitungan SAW Publik & Import Nilai Kriteria
 
 ### A. Pengumuman Hasil Seleksi Publik pada Landing Page (`welcome.blade.php`)
+Sesuai arahan, sistem kini tidak lagi menggunakan dashboard terpisah untuk orang tua. Sebagai gantinya, pengumuman hasil seleksi dibuka langsung untuk publik di halaman beranda dengan kemampuan filter yang sangat fleksibel:
 1. **Navigasi Cepat**: Tautan menu **"Hasil Seleksi"** di navbar utama membawa pengunjung langsung ke section `#hasil-seleksi`.
-2. **Kondisi Periode Aktif**: Hanya memuat hasil perhitungan pada periode yang sedang berstatus aktif (`status_aktif = true`). Jika belum ada periode aktif atau kalkulasi belum dieksekusi, sistem menampilkan pesan informatif.
-3. **Filter Interaktif Publik**:
-   * Filter pencarian berdasarkan nama atau NIS siswa.
-   * Filter per kelas (Kelas 1 s/d 6).
-   * Filter status kelolosan (*Lolos* vs *Tidak Lolos*).
-   * Statistik ringkas: Total kandidat dinilai, jumlah direkomendasikan lolos, dan kuota.
-4. **Perlindungan Privasi Siswa (*Data Privacy Protection*)**:
-   * Nama siswa disamarkan (*masked*) dengan algoritma regex (`A*** F***`).
-   * NIS siswa tidak dipublikasikan ke publik. Orang tua dapat masuk ke **Portal Orang Tua** untuk mengecek data detail putra-putrinya.
+2. **Filter Pencarian Multi-Kriteria**:
+   * **Filter NIS**: Pencarian nomor induk siswa secara langsung.
+   * **Filter Nama Siswa**: Pencarian berdasarkan nama lengkap calon penerima.
+   * **Filter Kelas**: Dropdown seleksi kelas siswa (Kelas 1 s/d 6).
+   * **Filter Periode Seleksi**: Pilihan periode tahun ajaran seleksi (secara bawaan menampilkan periode aktif).
+   * **Filter Status Kelolosan**: Memfilter siswa yang dinyatakan *Lolos* atau *Tidak Lolos*.
+3. **Statistik Real-time**: Menampilkan metrik total kandidat yang dihitung, jumlah yang direkomendasikan lolos berdasarkan kuota, serta jumlah yang belum/tidak lolos.
 
 ### B. Impor Nilai Kriteria Siswa via Excel (`PenilaianImport.php` & `PenilaianTemplateExport.php`)
 1. **Format File**: Mendukung file `.xlsx`, `.xls`, dan `.csv`.
@@ -246,7 +226,6 @@ php artisan serve
 Semua akun menggunakan kata sandi standar: **`password123`**
 * **Admin Tata Usaha**: `admin@sekolah.com`
 * **Kepala Madrasah**: `kepsek@sekolah.com`
-* **Orang Tua Siswa**: `ortu@sekolah.com`
 
 ---
 
