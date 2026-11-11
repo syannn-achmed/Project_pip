@@ -60,11 +60,15 @@
                 </a>
 
                 <!-- Navigation Links (Desktop) -->
-                <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-600">
+                <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-gray-600">
                     <a href="#beranda" class="hover:text-emerald-700 transition">Beranda</a>
                     <a href="#tentang" class="hover:text-emerald-700 transition">Tentang PIP</a>
                     <a href="#kriteria" class="hover:text-emerald-700 transition">Kriteria SAW</a>
                     <a href="#alur" class="hover:text-emerald-700 transition">Alur Seleksi</a>
+                    <a href="#hasil-seleksi" class="hover:text-emerald-700 transition flex items-center gap-1.5">
+                        <span>Hasil Seleksi</span>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Publik</span>
+                    </a>
                     <a href="#kontak" class="hover:text-emerald-700 transition">Kontak</a>
                 </nav>
 
@@ -449,6 +453,263 @@
                 </div>
 
             </div>
+        </div>
+    </section>
+
+    <!-- 7B. PENGUMUMAN HASIL PERHITUNGAN SAW (PUBLIK / PERIODE AKTIF) -->
+    <section id="hasil-seleksi" class="py-16 sm:py-24 bg-white border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto space-y-4 mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Transparansi & Akuntabilitas Publik
+                </div>
+                <h2 class="text-3xl font-black text-gray-950 tracking-tight sm:text-4xl">
+                    Hasil Perhitungan SAW & Perangkingan Calon PIP
+                </h2>
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                    Pengumuman hasil kalkulasi sistem pendukung keputusan metode <em>Simple Additive Weighting</em> untuk periode seleksi berjalan. Terbuka untuk umum dengan perlindungan privasi data siswa.
+                </p>
+                @if ($periodeAktif)
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-2xl bg-slate-100 text-slate-700 text-xs font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Periode Aktif: <strong class="text-emerald-700">{{ $periodeAktif->nama_periode }}</strong> ({{ $periodeAktif->tahun_ajaran }})</span>
+                    </div>
+                @endif
+            </div>
+
+            @if (!$periodeAktif)
+                <div class="p-8 rounded-3xl bg-amber-50 border border-amber-200 text-center max-w-2xl mx-auto space-y-2">
+                    <div class="w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base">Belum Ada Periode Seleksi Aktif</h3>
+                    <p class="text-xs text-gray-600">Saat ini belum ada periode seleksi bantuan PIP yang berstatus aktif. Silakan hubungi Panitia PIP Madrasah untuk jadwal pendaftaran.</p>
+                </div>
+            @elseif ($hasilSaws->isEmpty() && !request()->hasAny(['kelas', 'status', 'q']))
+                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-200 text-center max-w-2xl mx-auto space-y-3">
+                    <div class="w-12 h-12 mx-auto rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base">Kalkulasi Belum Dilakukan</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Data penilaian sedang dalam proses verifikasi dan perhitungan SAW oleh Panitia TU. Hasil perangkingan resmi akan langsung tayang pada halaman ini setelah penetapan kuota.
+                    </p>
+                </div>
+            @else
+                <!-- Ringkasan Statistik Singkat -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-gray-500 font-medium">Total Kandidat Dinilai</span>
+                            <div class="text-xl font-black text-gray-900">{{ $hasilSaws->total() }} <span class="text-xs font-normal text-gray-500">siswa</span></div>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-emerald-700 font-medium">Direkomendasikan Lolos</span>
+                            <div class="text-xl font-black text-emerald-800">{{ $totalLolos }} <span class="text-xs font-normal text-emerald-600">penerima</span></div>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-gray-500 font-medium">Belum / Tidak Lolos</span>
+                            <div class="text-xl font-black text-gray-700">{{ $totalTidakLolos }} <span class="text-xs font-normal text-gray-500">siswa</span></div>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-slate-200 text-slate-600 flex items-center justify-center font-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Filter & Pencarian -->
+                <div class="p-4 sm:p-5 rounded-3xl bg-slate-50 border border-slate-200 mb-6 shadow-sm">
+                    <form method="GET" action="{{ url('/') }}#hasil-seleksi" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                        <!-- Search Box -->
+                        <div class="sm:col-span-5 relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </span>
+                            <input type="text" name="q" value="{{ request('q') }}"
+                                placeholder="Cari nama atau NIS siswa..."
+                                class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none transition" />
+                        </div>
+
+                        <!-- Filter Kelas -->
+                        <div class="sm:col-span-3">
+                            <select name="kelas" class="w-full py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white focus:border-emerald-600 focus:outline-none transition">
+                                <option value="" class="text-slate-900 font-bold">-- Semua Kelas --</option>
+                                @foreach ($kelasList as $k)
+                                    <option value="{{ $k }}" {{ request('kelas') == $k ? 'selected' : '' }} class="text-slate-900">
+                                        Kelas {{ $k }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Filter Status -->
+                        <div class="sm:col-span-2">
+                            <select name="status" class="w-full py-2 px-3 text-xs sm:text-sm rounded-xl border border-slate-300 font-semibold text-slate-900 bg-white focus:border-emerald-600 focus:outline-none transition">
+                                <option value="" class="text-slate-900 font-bold">-- Status --</option>
+                                <option value="Lolos" {{ request('status') == 'Lolos' ? 'selected' : '' }} class="text-slate-900 font-semibold text-emerald-700">Lolos</option>
+                                <option value="Tidak Lolos" {{ request('status') == 'Tidak Lolos' ? 'selected' : '' }} class="text-slate-900 font-semibold text-rose-700">Tidak Lolos</option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="sm:col-span-2 flex items-center gap-2">
+                            <button type="submit" class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">
+                                Terapkan
+                            </button>
+                            @if (request()->hasAny(['kelas', 'status', 'q']))
+                                <a href="{{ url('/') }}#hasil-seleksi" class="py-2 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition">
+                                    Reset
+                                </a>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tabel Hasil SAW Publik -->
+                <div class="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
+                                    <th class="py-3.5 px-4 text-center w-20">Peringkat</th>
+                                    <th class="py-3.5 px-4">Nama Siswa (Disamarkan)</th>
+                                    <th class="py-3.5 px-4 text-center w-24">Kelas</th>
+                                    <th class="py-3.5 px-4 text-center w-36">Nilai Akhir (V)</th>
+                                    <th class="py-3.5 px-4 text-center w-36">Status Seleksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-xs sm:text-sm">
+                                @forelse ($hasilSaws as $item)
+                                    @php
+                                        $nama = $item->siswa->nama ?? 'Siswa';
+                                        $nis = $item->siswa->nis ?? '0000';
+                                        // Masking Nama: Inisial huruf pertama tiap kata, sisanya sensor bintang
+                                        $maskedNama = preg_replace_callback('/\b(\w)(\w+)/u', function ($m) {
+                                            return $m[1] . str_repeat('*', min(4, strlen($m[2])));
+                                        }, $nama);
+
+                                        $isTop3 = $item->peringkat <= 3;
+                                        $isLolos = $item->status_penerimaan === 'Lolos';
+                                    @endphp
+                                    <tr class="hover:bg-slate-50/80 transition-colors {{ $isTop3 ? 'bg-amber-50/20' : '' }}">
+                                        <!-- Peringkat -->
+                                        <td class="py-3.5 px-4 text-center">
+                                            @if ($item->peringkat == 1)
+                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-900 font-black text-xs shadow-sm ring-2 ring-amber-200">
+                                                    🥇 1
+                                                </span>
+                                            @elseif ($item->peringkat == 2)
+                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-slate-300 to-slate-200 text-slate-800 font-black text-xs shadow-sm ring-2 ring-slate-200">
+                                                    🥈 2
+                                                </span>
+                                            @elseif ($item->peringkat == 3)
+                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-amber-600 to-amber-700 text-white font-black text-xs shadow-sm ring-2 ring-amber-300">
+                                                    🥉 3
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">
+                                                    #{{ $item->peringkat }}
+                                                </span>
+                                            @endif
+                                        </td>
+
+                                        <!-- Nama Siswa (Masked) -->
+                                        <td class="py-3.5 px-4">
+                                            <div class="font-bold text-slate-900">{{ $maskedNama }}</div>
+                                            <div class="text-[11px] text-slate-400 font-mono flex items-center gap-1.5 mt-0.5">
+                                                <span>Identitas Terproteksi</span>
+                                                <span>&bull;</span>
+                                                <span>MIS AL KAUTSAR</span>
+                                            </div>
+                                        </td>
+
+                                        <!-- Kelas -->
+                                        <td class="py-3.5 px-4 text-center">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs">
+                                                Kelas {{ $item->siswa->kelas ?? '-' }}
+                                            </span>
+                                        </td>
+
+                                        <!-- Nilai Akhir V -->
+                                        <td class="py-3.5 px-4 text-center font-mono">
+                                            <span class="font-extrabold text-slate-900 text-sm">
+                                                {{ number_format((float) $item->nilai_akhir, 4) }}
+                                            </span>
+                                        </td>
+
+                                        <!-- Status Penerimaan -->
+                                        <td class="py-3.5 px-4 text-center">
+                                            @if ($isLolos)
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    Lolos Seleksi
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                                                    Tidak Lolos
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="py-12 text-center text-slate-500 text-xs sm:text-sm">
+                                            Tidak ditemukan hasil perhitungan yang sesuai dengan filter pencarian.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    @if ($hasilSaws->hasPages())
+                        <div class="p-4 bg-slate-50 border-t border-slate-200">
+                            {{ $hasilSaws->fragment('hasil-seleksi')->links() }}
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Footer Note Privasi -->
+                <div class="mt-4 p-4 rounded-2xl bg-slate-100/70 border border-slate-200 text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <span>Sesuai regulasi perlindungan data pribadi siswa, nama pendaftar disamarkan untuk umum. Orang tua/wali murid dapat masuk ke <strong>Portal Orang Tua</strong> untuk melihat rincian lengkap putra-putrinya.</span>
+                    </div>
+                    <a href="{{ route('login') }}" class="text-emerald-700 hover:text-emerald-900 font-bold whitespace-nowrap">
+                        Masuk Portal &rarr;
+                    </a>
+                </div>
+            @endif
         </div>
     </section>
 

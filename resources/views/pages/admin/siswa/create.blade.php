@@ -53,15 +53,15 @@
 
                         <!-- Kelas -->
                         <div class="form-control">
-                            <label class="label"><span class="label-text font-semibold text-xs">Kelas / Jurusan <span class="text-error">*</span></span></label>
-                            <input type="text" name="kelas" value="{{ old('kelas') }}" required placeholder="Contoh: X RPL 1 atau XI TKJ 2"
+                            <label class="label"><span class="label-text font-semibold text-xs">Kelas / Lokal <span class="text-error">*</span></span></label>
+                            <input type="text" name="kelas" value="{{ old('kelas') }}" required placeholder="Contoh: VI A"
                                 class="input input-bordered input-sm sm:input-md rounded-xl focus:outline-primary @error('kelas') input-error @enderror" />
                         </div>
 
                         <!-- Jenis Kelamin -->
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold text-xs">Jenis Kelamin <span class="text-error">*</span></span></label>
-                            <select name="jk" required class="select select-bordered select-sm sm:select-md rounded-xl focus:outline-primary @error('jk') select-error @enderror">
+                            <select name="jk" required class="select select-bordered select-md w-full min-h-12 h-12 rounded-xl leading-normal focus:outline-primary" @error('jk') select-error @enderror">
                                 <option value="">Pilih Jenis Kelamin</option>
                                 <option value="L" {{ old('jk') === 'L' ? 'selected' : '' }}>Laki-laki (L)</option>
                                 <option value="P" {{ old('jk') === 'P' ? 'selected' : '' }}>Perempuan (P)</option>
@@ -90,7 +90,7 @@
                         <!-- Pekerjaan Ortu -->
                         <div class="form-control">
                             <label class="label"><span class="label-text font-semibold text-xs">Pekerjaan Orang Tua</span></label>
-                            <input type="text" name="pekerjaan_ortu" value="{{ old('pekerjaan_ortu') }}" placeholder="Contoh: Buruh Harian Lepas, Petani"
+                            <input type="text" name="pekerjaan_ortu" value="{{ old('pekerjaan_ortu') }}" placeholder="Contoh: Buruh Harian Lepas, Petani "
                                 class="input input-bordered input-sm sm:input-md rounded-xl focus:outline-primary" />
                         </div>
 
@@ -109,7 +109,7 @@
                             
                             <div class="space-y-2">
                                 <div x-show="!buatBaru">
-                                    <select name="user_id_ortu" class="select select-bordered select-sm sm:select-md w-full rounded-xl font-medium text-slate-900 bg-white border-slate-300 focus:border-emerald-600">
+                                    <select name="user_id_ortu" class="select select-bordered select-md w-full min-h-12 h-12 rounded-xl leading-normal focus:outline-primary">
                                         <option value="">-- Pilih Akun Ortu Yang Sudah Ada (Opsional) --</option>
                                         @foreach ($ortuUsers as $user)
                                             <option value="{{ $user->id }}" {{ old('user_id_ortu') == $user->id ? 'selected' : '' }}>

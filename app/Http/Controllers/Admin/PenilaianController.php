@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Exports\PenilaianTemplateExport;
+use App\Imports\PenilaianImport;
 use App\Models\Kriteria;
 use App\Models\Penilaian;
 use App\Models\Periode;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PenilaianController extends Controller
 {
@@ -116,5 +119,55 @@ class PenilaianController extends Controller
 
         return redirect()->route('admin.penilaian.index')
             ->with('success', "Penilaian untuk siswa {$siswa->nama} berhasil disimpan.");
+    }
+
+    /**
+     * Download template Excel untuk impor data nilai kriteria siswa
+     */
+    public function template()
+    {
+        $periodeAktif = Periode::where('status_aktif', true)->first();
+        $fileName = 'template_nilai_kriteria_' . ($periodeAktif ? str_replace(' ', '_', strtolower($periodeAktif->nama_periode)) : 'spk') . '.xlsx';
+        return Excel::download(new PenilaianTemplateExport($periodeAktif), $fileName);
+    }
+
+    /**
+     * Import data nilai kriteria siswa dari file Excel
+     */
+    public function import(Request $request)
+    {
+        $periodeAktif = Periode::where('status_aktif', true)->first();
+
+        if (!$periodeAktif) {
+            return redirect()->route('admin.penilaian.index')
+                ->with('error', 'Tidak dapat mengimpor nilai karena tidak ada periode seleksi yang sedang aktif.');
+        }
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:5120',
+        ], [
+            'file.required' => 'Pilih file Excel terlebih dahulu.',
+            'file.mimes' => 'Format file harus berupa .xlsx, .xls, atau .csv.',
+            'file.max' => 'Ukuran file maksimal adalah 5MB.',
+        ]);
+
+        try {
+            $importer = new PenilaianImport($periodeAktif->id);
+            Excel::import($importer, $request->file('file'));
+
+            $stats = $importer->getStats();
+            $message = "Berhasil mengimpor nilai kriteria! {$stats['siswa_processed']} siswa diproses, {$stats['penilaian_saved']} entri nilai berhasil disimpan.";
+
+            if (!empty($stats['errors'])) {
+                $errCount = count($stats['errors']);
+                $errPreview = implode(' ', array_slice($stats['errors'], 0, 3));
+                $message .= " (Catatan: {$errCount} peringatan dilewati, misal: {$errPreview})";
+            }
+
+            return redirect()->route('admin.penilaian.index')->with('success', $message);
+        } catch (\Exception $e) {
+            return redirect()->route('admin.penilaian.index')
+                ->with('error', 'Gagal memproses file Excel: ' . $e->getMessage());
+        }
     }
 }

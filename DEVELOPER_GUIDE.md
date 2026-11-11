@@ -92,9 +92,11 @@ Modul ini dibuat khusus untuk menyelesaikan kebutuhan pengelolaan akun wali muri
 PIP_SAW/
 ├── app/
 │   ├── Exports/
-│   │   └── SiswaExport.php              # Format ekspor spreadsheet siswa
+│   │   ├── SiswaExport.php              # Format ekspor spreadsheet siswa
+│   │   └── PenilaianTemplateExport.php  # Template format Excel nilai kriteria (C1-C5)
 │   ├── Imports/
-│   │   └── SiswaImport.php              # Handler impor file Excel siswa
+│   │   ├── SiswaImport.php              # Handler impor file Excel biodata siswa
+│   │   └── PenilaianImport.php          # Handler impor Excel nilai kriteria siswa
 │   ├── Http/Controllers/
 │   │   ├── Admin/
 │   │   │   ├── DashboardController.php  # Metrik analitik & data agregasi admin
@@ -103,7 +105,7 @@ PIP_SAW/
 │   │   │   ├── SubKriteriaController.php# CRUD skala bobot & filter kriteria
 │   │   │   ├── SiswaController.php      # CRUD siswa, foto, & trigger excel
 │   │   │   ├── AkunOrtuController.php   # Manajemen & tautan akun orang tua siswa
-│   │   │   ├── PenilaianController.php  # Form input nilai alternatif
+│   │   │   ├── PenilaianController.php  # Form input nilai alternatif & impor Excel
 │   │   │   ├── HasilSawController.php   # Eksekusi & transparansi matriks SAW
 │   │   │   └── LaporanController.php    # Rekapitulasi & cetak PDF
 │   │   ├── Kepsek/
@@ -125,7 +127,7 @@ PIP_SAW/
 │   ├── logo.png                         # Asset logo MIS AL KAUTSAR
 │   └── storage/                         # Symlink storage publik
 ├── resources/views/
-│   ├── welcome.blade.php                # Landing page utama bertema MIS AL KAUTSAR
+│   ├── welcome.blade.php                # Landing page utama + Hasil SAW Publik (Filterable)
 │   ├── components/
 │   │   ├── admin-layout.blade.php       # Master layout sidebar & navbar admin
 │   │   └── application-logo.blade.php   # Komponen logo terpusat
@@ -140,15 +142,44 @@ PIP_SAW/
 │       │   ├── periode/                 # CRUD periode seleksi
 │       │   ├── kriteria/                # CRUD kriteria & bobot
 │       │   ├── subkriteria/             # CRUD subkriteria rating
-│       │   ├── penilaian/               # Form input nilai kriteria
+│       │   ├── penilaian/               # Form & modal import nilai kriteria Excel
 │       │   ├── saw/                     # Eksekusi mesin SAW
 │       │   └── laporan/                 # Rekapitulasi & cetak PDF
 │       ├── kepsek/                      # View dashboard kepala madrasah
 │       └── ortu/                        # View pengumuman aman privasi orang tua
 └── routes/
-    ├── web.php                          # Routing multi-role terlindungi middleware
+    ├── web.php                          # Routing multi-role + publik SAW + template import
     └── auth.php                         # Routing otentikasi Breeze & logout aman
 ```
+
+---
+
+## 📊 7. Fitur Hasil Perhitungan SAW Publik & Import Nilai Kriteria
+
+### A. Pengumuman Hasil Seleksi Publik pada Landing Page (`welcome.blade.php`)
+1. **Navigasi Cepat**: Tautan menu **"Hasil Seleksi"** di navbar utama membawa pengunjung langsung ke section `#hasil-seleksi`.
+2. **Kondisi Periode Aktif**: Hanya memuat hasil perhitungan pada periode yang sedang berstatus aktif (`status_aktif = true`). Jika belum ada periode aktif atau kalkulasi belum dieksekusi, sistem menampilkan pesan informatif.
+3. **Filter Interaktif Publik**:
+   * Filter pencarian berdasarkan nama atau NIS siswa.
+   * Filter per kelas (Kelas 1 s/d 6).
+   * Filter status kelolosan (*Lolos* vs *Tidak Lolos*).
+   * Statistik ringkas: Total kandidat dinilai, jumlah direkomendasikan lolos, dan kuota.
+4. **Perlindungan Privasi Siswa (*Data Privacy Protection*)**:
+   * Nama siswa disamarkan (*masked*) dengan algoritma regex (`A*** F***`).
+   * NIS siswa tidak dipublikasikan ke publik. Orang tua dapat masuk ke **Portal Orang Tua** untuk mengecek data detail putra-putrinya.
+
+### B. Impor Nilai Kriteria Siswa via Excel (`PenilaianImport.php` & `PenilaianTemplateExport.php`)
+1. **Format File**: Mendukung file `.xlsx`, `.xls`, dan `.csv`.
+2. **Struktur Kolom**:
+   * Kolom pengenal alternatif: `nis` (prioritas utama) atau `nama_siswa`.
+   * Kolom nilai kriteria: `C1`, `C2`, `C3`, `C4`, `C5` (atau kode kriteria dinamis lainnya).
+3. **Pencocokan Cerdas (*Smart Matching*)**:
+   * Jika kolom kriteria berisi angka skala (misal `1`, `2`, `3`, `4`, `5`), sistem mencocokkannya dengan `sub_kriterias.nilai` (atau nilai terdekat / *nearest scale* jika terdapat perbedaan desimal).
+   * Jika kolom berisi teks (misal `< Rp 1.000.000` atau `Sangat Layak`), sistem mencocokkannya dengan `sub_kriterias.nama_subkriteria` baik secara eksak maupun pencarian parsial.
+   * Menggunakan `Penilaian::updateOrCreate` di dalam transaksi database (`DB::transaction`) untuk memastikan integritas data.
+4. **Fitur Unduh Template Otomatis**:
+   * Admin TU dapat langsung menekan tombol **"Download Format Excel"** di halaman Penilaian Siswa.
+   * Template otomatis menghasilkan daftar siswa terdaftar beserta kolom-kolom kriteria yang aktif dalam sistem.
 
 ---
 

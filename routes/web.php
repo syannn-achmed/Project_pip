@@ -6,12 +6,48 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Kepsek\DashboardController as KepsekDashboard;
 use App\Http\Controllers\Ortu\DashboardController as OrtuDashboard;
 
-Route::get('/', function () {
+Route::get('/', function (\Illuminate\Http\Request $request) {
     $periodeAktif = \App\Models\Periode::where('status_aktif', true)->first();
     $totalSiswa = \App\Models\Siswa::count();
     $kriterias = \App\Models\Kriteria::orderBy('kode_kriteria', 'asc')->get();
 
-    return view('welcome', compact('periodeAktif', 'totalSiswa', 'kriterias'));
+    $hasilSaws = collect();
+    $totalLolos = 0;
+    $totalTidakLolos = 0;
+
+    if ($periodeAktif) {
+        $query = \App\Models\HasilSaw::with('siswa')
+            ->where('periode_id', $periodeAktif->id)
+            ->orderBy('peringkat', 'asc');
+
+        if ($request->filled('kelas')) {
+            $query->whereHas('siswa', function ($q) use ($request) {
+                $q->where('kelas', $request->kelas);
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status_penerimaan', $request->status);
+        }
+
+        if ($request->filled('q')) {
+            $qSearch = $request->q;
+            $query->whereHas('siswa', function ($q) use ($qSearch) {
+                $q->where('nama', 'like', "%{$qSearch}%")
+                  ->orWhere('nis', 'like', "%{$qSearch}%");
+            });
+        }
+
+        $allHasil = \App\Models\HasilSaw::where('periode_id', $periodeAktif->id)->get();
+        $totalLolos = $allHasil->where('status_penerimaan', 'Lolos')->count();
+        $totalTidakLolos = $allHasil->where('status_penerimaan', 'Tidak Lolos')->count();
+
+        $hasilSaws = $query->paginate(15)->withQueryString();
+    }
+
+    $kelasList = \App\Models\Siswa::select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
+
+    return view('welcome', compact('periodeAktif', 'totalSiswa', 'kriterias', 'hasilSaws', 'kelasList', 'totalLolos', 'totalTidakLolos'));
 })->name('home');
 
 Route::get('/dashboard', function () {
@@ -54,7 +90,9 @@ Route::middleware(['auth', 'role:admin_tu'])->prefix('admin')->name('admin.')->g
     // Manajemen Akun Orang Tua
     Route::resource('akun-ortu', App\Http\Controllers\Admin\AkunOrtuController::class)->except(['create', 'show', 'edit']);
 
-    // Penilaian Siswa (Input Nilai per Kriteria)
+    // Penilaian Siswa (Input Nilai per Kriteria & Import Excel)
+    Route::get('penilaian/template', [App\Http\Controllers\Admin\PenilaianController::class, 'template'])->name('penilaian.template');
+    Route::post('penilaian/import', [App\Http\Controllers\Admin\PenilaianController::class, 'import'])->name('penilaian.import');
     Route::resource('penilaian', App\Http\Controllers\Admin\PenilaianController::class)->only(['index', 'edit', 'update']);
 
     // Perhitungan SAW & Perangkingan

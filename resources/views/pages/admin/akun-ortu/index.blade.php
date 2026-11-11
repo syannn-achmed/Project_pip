@@ -145,7 +145,7 @@
                                         <form method="POST" action="{{ route('admin.siswa.tautkan-akun-ortu') }}" class="flex items-center gap-1.5">
                                             @csrf
                                             <input type="hidden" name="user_id_ortu" value="{{ $ortu->id }}">
-                                            <select name="siswa_id" required class="select select-bordered select-xs rounded-lg font-medium text-slate-900 bg-white border-slate-300 max-w-[160px]">
+                                            <select name="siswa_id" required class="select select-bordered select-xs rounded-lg font-medium text-slate-900 bg-white border-slate-300 max-w-[180px] !leading-[1.5] !py-0">
                                                 <option value="" disabled selected>+ Pilih Siswa</option>
                                                 @foreach ($siswaBelumPunyaAkun as $s)
                                                     <option value="{{ $s->id }}">{{ $s->nama }} ({{ $s->kelas }})</option>
@@ -246,7 +246,7 @@
                 <!-- Tautkan Siswa -->
                 <div class="form-control">
                     <label class="label"><span class="label-text font-bold text-xs text-slate-700">Tautkan ke Siswa (Opsional)</span></label>
-                    <select name="siswa_id" class="select select-bordered select-sm rounded-xl font-medium text-slate-900 bg-white border-slate-300 focus:border-emerald-600 focus:outline-none">
+                    <select name="siswa_id" class="select select-bordered select-md w-full min-h-12 h-12 rounded-xl leading-normal focus:outline-primary">
                         <option value="">-- Jangan Tautkan Dulu --</option>
                         @foreach ($siswaBelumPunyaAkun as $s)
                             <option value="{{ $s->id }}">{{ $s->nama }} ({{ $s->kelas }} • NIS: {{ $s->nis }})</option>

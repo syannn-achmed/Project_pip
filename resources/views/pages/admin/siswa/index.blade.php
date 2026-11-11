@@ -18,7 +18,7 @@
                         <span class="text-xs text-base-content/50">Alternatif Calon Penerima</span>
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-base-content">Data Siswa</h1>
-                    <p class="text-xs sm:text-sm text-base-content/65 mt-0.5">Kelola biodata calon penerima PIP, relasi akun orang tua, dan berkas foto.</p>
+                    <p class="text-xs sm:text-sm text-base-content/65 mt-0.5">Kelola biodata calon penerima PIP dan berkas foto.</p>
                 </div>
             </div>
 
@@ -84,7 +84,9 @@
 
                     <!-- Filter Kelas -->
                     <div>
-                        <select name="kelas" class="select select-bordered select-sm w-full rounded-xl font-semibold text-slate-900 bg-white border-slate-300 focus:border-emerald-600 focus:outline-none" onchange="this.form.submit()">
+                        <select name="kelas"
+    class="select select-bordered w-full h-12 min-h-12 text-base leading-normal rounded-xl focus:outline-primary"
+    onchange="this.form.submit()">
                             <option value="" class="text-slate-900 font-bold">-- Semua Kelas --</option>
                             @foreach ($kelasList as $kelas)
                                 <option value="{{ $kelas }}" {{ request('kelas') == $kelas ? 'selected' : '' }} class="text-slate-900 font-medium">
@@ -96,7 +98,9 @@
 
                     <!-- Filter JK -->
                     <div>
-                        <select name="jk" class="select select-bordered select-sm w-full rounded-xl font-semibold text-slate-900 bg-white border-slate-300 focus:border-emerald-600 focus:outline-none" onchange="this.form.submit()">
+                        <select name="jk"
+    class="select select-bordered w-full h-12 min-h-12 text-base leading-normal rounded-xl focus:outline-primary"
+    onchange="this.form.submit()">
                             <option value="" class="text-slate-900 font-bold">-- Semua Jenis Kelamin --</option>
                             <option value="L" {{ request('jk') == 'L' ? 'selected' : '' }} class="text-slate-900 font-medium">Laki-laki (L)</option>
                             <option value="P" {{ request('jk') == 'P' ? 'selected' : '' }} class="text-slate-900 font-medium">Perempuan (P)</option>

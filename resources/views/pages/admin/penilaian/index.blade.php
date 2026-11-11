@@ -22,12 +22,28 @@
                 </div>
             </div>
 
-            @if ($periodeAktif)
-                <div class="flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-2xl">
-                    <span class="badge badge-primary badge-xs"></span>
-                    <span class="text-xs font-bold text-primary">Periode Aktif: {{ $periodeAktif->nama_periode }} ({{ $periodeAktif->tahun_ajaran }})</span>
-                </div>
-            @endif
+            <div class="flex items-center gap-2">
+                @if ($periodeAktif)
+                    <div class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 bg-primary/10 border border-primary/20 rounded-2xl">
+                        <span class="badge badge-primary badge-xs"></span>
+                        <span class="text-xs font-bold text-primary">Periode: {{ $periodeAktif->nama_periode }}</span>
+                    </div>
+
+                    <a href="{{ route('admin.penilaian.template') }}" class="btn btn-outline btn-success btn-sm rounded-xl gap-2 font-bold shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download Format Excel
+                    </a>
+
+                    <button onclick="document.getElementById('modal-import-penilaian').showModal()" class="btn btn-primary btn-sm rounded-xl gap-2 shadow-sm shadow-primary/20 font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12" />
+                        </svg>
+                        Import Nilai Excel
+                    </button>
+                @endif
+            </div>
         </div>
 
         <!-- 2. Flash Messages -->
@@ -191,4 +207,81 @@
         </div>
 
     </div>
+
+    <!-- Modal Import Excel Nilai Kriteria -->
+    <dialog id="modal-import-penilaian" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box rounded-3xl bg-white p-6 max-w-xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-lg text-slate-900">Import Nilai Kriteria dari Excel</h3>
+                        <p class="text-xs text-slate-500">Unggah nilai alternatif siswa untuk periode aktif</p>
+                    </div>
+                </div>
+                <button type="button" onclick="document.getElementById('modal-import-penilaian').close()" class="btn btn-sm btn-circle btn-ghost">✕</button>
+            </div>
+
+            <form method="POST" action="{{ route('admin.penilaian.import') }}" enctype="multipart/form-data" class="mt-4 space-y-4">
+                @csrf
+
+                <!-- Unduh Format Dulu -->
+                <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-start gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div class="text-xs text-emerald-900 flex-1">
+                        <p class="font-bold">Tips Mempersiapkan Berkas Excel:</p>
+                        <p class="mt-0.5 leading-relaxed">
+                            Unduh template format resmi agar header kolom kriteria (C1, C2, dst) sesuai dengan kode kriteria sistem MIS AL KAUTSAR.
+                        </p>
+                        <a href="{{ route('admin.penilaian.template') }}" class="inline-flex items-center gap-1.5 mt-2 font-black text-emerald-800 underline hover:text-emerald-950">
+                            <span>Unduh Template Format (.xlsx)</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Input File -->
+                <div class="form-control w-full">
+                    <label class="label p-0 mb-1.5"><span class="text-xs font-bold text-slate-800">Pilih Berkas Spreadsheet (.xlsx, .xls, .csv)</span></label>
+                    <input type="file" name="file" required accept=".xlsx,.xls,.csv"
+                        class="file-input file-input-bordered file-input-sm w-full rounded-xl bg-white border-slate-300 font-medium text-slate-900 focus:border-emerald-600 focus:outline-none" />
+                    <span class="text-[10px] text-slate-400 mt-1">Maksimal ukuran file: 5 MB</span>
+                </div>
+
+                <!-- Format Guide -->
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-700 space-y-1.5">
+                    <p class="font-bold text-slate-900">Format Kolom Header Spreadsheet:</p>
+                    <div class="p-2 bg-white rounded-xl border border-slate-200 font-mono text-[11px] text-emerald-800 overflow-x-auto">
+                        nis | nama_siswa | C1 | C2 | C3 | C4 | C5
+                    </div>
+                    <ul class="list-disc pl-4 text-[11px] text-slate-500 space-y-0.5">
+                        <li>Kolom <strong>nis</strong> atau <strong>nama_siswa</strong> berfungsi sebagai pengenal alternatif siswa.</li>
+                        <li>Kolom <strong>C1, C2, dst</strong> dapat diisi dengan <strong>angka nilai sub-kriteria (1 s/d 5)</strong> atau teks nama sub-kriteria.</li>
+                        <li>Sistem otomatis mencocokkan nilai terdekat dengan skala sub-kriteria yang telah dikonfigurasi.</li>
+                    </ul>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                    <button type="button" onclick="document.getElementById('modal-import-penilaian').close()" class="btn btn-ghost btn-sm rounded-xl text-slate-600">Batal</button>
+                    <button type="submit" class="btn btn-primary btn-sm rounded-xl font-bold gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12" />
+                        </svg>
+                        Mulai Import Nilai
+                    </button>
+                </div>
+            </form>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
 </x-admin-layout>
